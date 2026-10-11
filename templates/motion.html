@@ -1,0 +1,36 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<!-- Starter for canvas motion graphics. Render with render/render_canvas.js (fonts load from the toolkit via /tk/). -->
+<link rel="stylesheet" href="/tk/fonts/fonts.css">
+<style>html,body{margin:0;background:#0A0B0F}canvas{display:block}</style></head>
+<body><canvas id="cv" width="1920" height="1080"></canvas>
+<script>
+const cv = document.getElementById('cv'), ctx = cv.getContext('2d'), W = cv.width, H = cv.height;
+// ---- easing + timing helpers
+const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+const outExpo = x => x >= 1 ? 1 : 1 - Math.pow(2, -10 * x);
+const outCubic = x => 1 - Math.pow(1 - x, 3);
+const prog = (t, a, d) => clamp((t - a) / d);                    // 0..1 between a and a+d
+const fade = (t, a, b, fi = .4, fo = .3) => Math.min(prog(t, a, fi), 1 - prog(t, b - fo, fo));
+let BG = null;
+function setBG(src) { return new Promise((res, rej) => { const im = new Image(); im.onload = () => { BG = im; res(); }; im.onerror = rej; im.src = src; }); }
+// words animate in one by one: y rise + fade, 60 ms stagger, out-expo
+function words(str, x, y, t, t0, { size = 96, weight = 800, color = '#EDEEF2', track = -0.04, stagger = .06, dur = .6, align = 'left' } = {}) {
+  ctx.font = `${weight} ${size}px Geist`; ctx.fillStyle = color; ctx.textBaseline = 'alphabetic';
+  if ('letterSpacing' in ctx) ctx.letterSpacing = `${track * size}px`;
+  const ws = str.split(' '), sp = ctx.measureText(' ').width, wid = ws.map(w => ctx.measureText(w).width);
+  let cx = align === 'center' ? x - (wid.reduce((a, b) => a + b, 0) + sp * (ws.length - 1)) / 2 : x;
+  ws.forEach((w, i) => { const p = outExpo(prog(t, t0 + i * stagger, dur)); ctx.globalAlpha = p; ctx.fillText(w, cx, y + (1 - p) * size * .35); cx += wid[i] + sp; });
+  ctx.globalAlpha = 1;
+}
+function grain(t, a = .035) { const f = Math.floor(t * 24); for (let i = 0; i < 1400; i++) { const r = Math.sin((f * 9301 + i * 49297) % 233280) * 43758.5; const x = (r - Math.floor(r)) * W, y = ((r * 7) % 1) * H; ctx.fillStyle = `rgba(255,255,255,${a})`; ctx.fillRect(x, y, 1.5, 1.5); } }
+// ---- your scene
+function renderAt(t) {
+  ctx.globalAlpha = 1; ctx.fillStyle = '#0A0B0F'; ctx.fillRect(0, 0, W, H);
+  if (BG) { const z = 1 + .04 * t / 10; ctx.drawImage(BG, W / 2 - W * z / 2, H / 2 - H * z / 2, W * z, H * z); }
+  words('One idea per shot.', 128, H / 2, t, .3);
+  ctx.font = '400 28px "Geist Mono"'; ctx.fillStyle = '#E2764F'; ctx.globalAlpha = fade(t, 1.2, 99); ctx.fillText('premium-design · video-finish', 132, H / 2 + 70); ctx.globalAlpha = 1;
+  grain(t);
+}
+window.F = { setBG, renderAt, ready: document.fonts.ready.then(() => Promise.all(['800 40px Geist', '400 20px "Geist Mono"'].map(f => document.fonts.load(f)))) };
+</script></body></html>

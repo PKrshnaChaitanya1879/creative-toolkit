@@ -1,0 +1,37 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="f/fonts.css">
+<style>
+:root{--bg:#ECEDEF;--ink:#16171B;--muted:#5E626C;--line:#C9CCD3;--accent:#2C46D6}
+*{box-sizing:border-box;margin:0}
+body{width:1200px;height:1680px;background:var(--bg);color:var(--ink);font-family:Geist,sans-serif;position:relative;overflow:hidden}
+.top{position:absolute;left:64px;right:64px;top:56px;display:flex;justify-content:space-between;font:500 15px/1 "Geist Mono";letter-spacing:.06em;padding-bottom:20px;border-bottom:1px solid var(--ink)}
+.num{position:absolute;left:58px;top:132px;font:800 168px/.9 Geist;letter-spacing:-.06em}
+.num span{display:block}
+.sent{position:absolute;left:64px;top:470px;width:380px;font:500 31px/1.22 Geist;letter-spacing:-.015em}
+.sent b{font-weight:500;color:var(--accent)}
+.note{position:absolute;left:64px;top:1236px;width:340px;font:400 16px/1.5 Geist;color:var(--muted)}
+.img{position:absolute;left:480px;top:132px;width:656px;height:1180px;background:url(pbd_tall.jpg) center/cover}
+.ring{position:absolute;left:744px;top:716px;width:56px;height:56px;border:2px solid #fff;border-radius:50%}
+.lead{position:absolute;left:800px;top:744px;width:150px;height:1px;background:#fff}
+.lbl{position:absolute;left:965px;top:727px;font:500 14px/1.45 "Geist Mono";color:#fff}
+.tl{position:absolute;left:64px;right:64px;top:1410px;height:1px;background:var(--ink)}
+.pt{position:absolute;top:1402px;width:2px;height:17px;background:var(--ink)}
+.pt.now{background:var(--accent);width:4px;height:25px;top:1398px}
+.yr{position:absolute;top:1440px;font:500 15px/1.5 "Geist Mono";width:220px}
+.yr i{display:block;font:400 17px/1.35 Geist;font-style:normal;color:var(--muted)}
+.yr.now{color:var(--accent);text-align:right}.yr.now i{color:var(--accent)}
+.foot{position:absolute;left:64px;right:64px;bottom:52px;display:flex;justify-content:space-between;font:400 13px/1.5 "Geist Mono";color:var(--muted);border-top:1px solid var(--line);padding-top:18px}
+</style></head><body>
+<div class="top"><span>VOYAGER 1</span><span>OCTOBER 2026</span></div>
+<div class="num"><span>23h</span><span>54m</span></div>
+<p class="sent">is how long a message from Earth now takes to reach <b>Voyager 1.</b></p>
+<p class="note">Launched in 1977 with a 1970s computer and a gold record. Still sending data home at 160 bits per second.</p>
+<div class="img"></div>
+<div class="ring"></div><div class="lead"></div>
+<div class="lbl">EARTH<br>6 billion km away<br>14 Feb 1990</div>
+<div class="tl"></div>
+<div class="pt" style="left:64px"></div><div class="yr" style="left:64px">1977<i>Launch</i></div>
+<div class="pt" style="left:349px"></div><div class="yr" style="left:349px">1990<i>Turns around for<br>one last photo</i></div>
+<div class="pt" style="left:830px"></div><div class="yr" style="left:830px">2012<i>Leaves the<br>Sun’s bubble</i></div>
+<div class="pt now" style="left:1132px"></div><div class="yr now" style="left:916px">2026<i>Almost a full<br>light-day out</i></div>
+<div class="foot"><span>Image: Pale Blue Dot Revisited, NASA/JPL-Caltech</span><span>Light-time: NASA JPL Horizons, 9 Oct 2026</span></div>
+</body></html>

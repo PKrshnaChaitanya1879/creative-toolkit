@@ -1,0 +1,129 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Caveat:wght@600&family=IBM+Plex+Mono:wght@400&display=swap">
+<style>html,body{margin:0;background:#000}canvas{display:block}</style></head>
+<body><canvas id="cv" width="1920" height="1080"></canvas>
+<script>
+const TL = /*TL*/{};
+const W = 1920, H = 1080, cv = document.getElementById('cv'), ctx = cv.getContext('2d');
+const serif = (s, it = true, w = 500) => `${it ? 'italic ' : ''}${w} ${s}px "Cormorant Garamond", Georgia, serif`;
+const hand = s => `600 ${s}px "Caveat", "Comic Sans MS", cursive`;
+const mono = s => `400 ${s}px "IBM Plex Mono", monospace`;
+const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+const fade = (t, a, b, fi = .5, fo = .5) => Math.min(clamp((t - a) / fi), clamp((b - t) / fo));
+const hash = n => { const x = Math.sin(n * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
+let BG = null;
+function setBG(src) { return new Promise((res, rej) => { const im = new Image(); im.onload = () => { BG = im; res(); }; im.onerror = rej; im.src = src; }); }
+
+function wrap(text, font, maxW) {
+  ctx.font = font; const words = text.split(' '); const lines = []; let cur = '';
+  for (const w of words) { const t = cur ? cur + ' ' + w : w; if (ctx.measureText(t).width > maxW && cur) { lines.push(cur); cur = w; } else cur = t; }
+  if (cur) lines.push(cur); return lines;
+}
+function txt(s, x, y, font, color, a = 1, align = 'center', shadow = true) {
+  if (a <= 0) return;
+  ctx.save(); ctx.globalAlpha = a; ctx.font = font; ctx.textAlign = align; ctx.fillStyle = color;
+  if (shadow) { ctx.shadowColor = 'rgba(0,0,0,0.85)'; ctx.shadowBlur = 14; ctx.shadowOffsetY = 2; }
+  ctx.fillText(s, x, y); ctx.restore();
+}
+// cassette drawing
+function cassette(cx, cy, w, t, label, spin = true, a = 1) {
+  const h = w * .63; ctx.save(); ctx.globalAlpha = a; ctx.translate(cx - w / 2, cy - h / 2);
+  ctx.fillStyle = 'rgba(20,18,16,0.82)'; ctx.strokeStyle = 'rgba(240,228,205,0.9)'; ctx.lineWidth = Math.max(1.5, w / 160);
+  const r = w * .04; ctx.beginPath(); ctx.roundRect(0, 0, w, h, r); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = 'rgba(238,226,200,0.95)'; ctx.fillRect(w * .07, h * .1, w * .86, h * .52);
+  ctx.fillStyle = 'rgba(30,26,22,0.9)'; ctx.beginPath(); ctx.roundRect(w * .25, h * .3, w * .5, h * .22, h * .1); ctx.fill();
+  for (const rx of [.36, .64]) {
+    const x = w * rx, y = h * .41, rr = h * .085;
+    ctx.save(); ctx.translate(x, y); ctx.rotate(spin ? t * 2.4 * (rx < .5 ? 1 : 1.15) : 0);
+    ctx.fillStyle = 'rgba(238,226,200,0.95)'; ctx.beginPath(); ctx.arc(0, 0, rr, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = 'rgba(30,26,22,1)';
+    for (let k = 0; k < 6; k++) { ctx.save(); ctx.rotate(k * Math.PI / 3); ctx.fillRect(-rr * .12, -rr * .95, rr * .24, rr * .4); ctx.restore(); }
+    ctx.beginPath(); ctx.arc(0, 0, rr * .3, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+  }
+  ctx.fillStyle = 'rgba(30,26,22,0.95)'; ctx.font = hand(h * .14); ctx.textAlign = 'left'; ctx.fillText(label, w * .1, h * .23);
+  ctx.strokeStyle = 'rgba(240,228,205,0.6)'; ctx.beginPath(); ctx.moveTo(w * .2, h); ctx.lineTo(w * .26, h * .78); ctx.lineTo(w * .74, h * .78); ctx.lineTo(w * .8, h); ctx.stroke();
+  ctx.restore();
+}
+function dust(t, strength = 1) {
+  const f = Math.floor(t * 24);
+  ctx.save();
+  for (let i = 0; i < 7; i++) {
+    const r = hash(f * 13 + i); if (r > .55) continue;
+    const x = hash(f * 7 + i * 3) * W, y = hash(f * 11 + i * 5) * H, s = 1 + hash(f + i) * 3.5;
+    ctx.fillStyle = `rgba(${r < .3 ? '255,250,235' : '10,8,6'},${.35 * strength})`; ctx.beginPath(); ctx.ellipse(x, y, s, s * (.4 + hash(i + f) * 1.4), hash(i) * 3, 0, Math.PI * 2); ctx.fill();
+  }
+  if (hash(Math.floor(t * 3)) > .72) { const x = hash(Math.floor(t * 3) * 9) * W; ctx.fillStyle = `rgba(240,235,220,${.12 * strength})`; ctx.fillRect(x, 0, 1.4, H); }
+  ctx.restore();
+}
+const tapeAt = t => TL.tapes.find(p => t >= p.t0 - .2 && t <= p.t1 + .6);
+function counterValue(t) {
+  let s = 0; for (const p of TL.tapes) s += Math.max(0, Math.min(t, p.t1) - p.t0); return Math.floor(s * 1.7);
+}
+function renderAt(t) {
+  ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1; ctx.shadowBlur = 0;
+  if (BG) ctx.drawImage(BG, 0, 0, W, H); else { ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H); }
+  // letterbox to 2:1
+  ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, 60); ctx.fillRect(0, H - 60, W, 60);
+  dust(t, 1);
+  // opening line
+  txt('a night train', W / 2, H / 2 + 8, serif(40), '#E9E1D2', fade(t, 4.2, 9.2, 1.2, 1.2) * .9);
+  // title card
+  const [ta, tb] = TL.title;
+  if (t >= ta - .1 && t <= tb + .1) {
+    const a = fade(t, ta, tb, 1.2, 1.0);
+    cassette(W / 2, H / 2 - 40, 520, t - ta, '', true, a);
+    const wp = clamp((t - ta - 1.0) / 1.6);
+    ctx.save(); ctx.beginPath(); ctx.rect(W / 2 - 230, H / 2 - 200, 460 * wp, 120); ctx.clip();
+    txt('Side B', W / 2, H / 2 - 112, hand(92), '#221C16', a, 'center', false); ctx.restore();
+    txt('a film in nine tapes', W / 2, H / 2 + 230, serif(38), '#E9E1D2', a * clamp((t - ta - 2.6) / 1));
+  }
+  // tape label + spinning cassette + counter while a tape plays
+  const tp = tapeAt(t);
+  if (tp) {
+    const a = fade(t, tp.t0 - .2, tp.t1 + .6, .5, .6);
+    const playing = t >= tp.t0 && t <= tp.t1;
+    cassette(170, H - 175, 200, t, `Side B · tape ${String(tp.n).padStart(2, '0')}`, playing, a * .95);
+    txt(tp.who === 'her' ? 'HER' : 'HIM', 290, H - 228, mono(18), '#E9E1D2', a * .85, 'left');
+    txt(String(counterValue(t)).padStart(3, '0'), W - 110, 112, mono(26), '#E9E1D2', a * .8, 'right');
+  }
+  // captions
+  for (const c of TL.caps) {
+    if (t < c.t0 - .3 || t > c.t1 + .5) continue;
+    const a = fade(t, c.t0 - .25, c.t1 + .45, .25, .45);
+    const font = serif(52, true, 600), lines = wrap(c.text, font, 1400);
+    const g = ctx.createLinearGradient(0, H - 330, 0, H - 60); g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, `rgba(0,0,0,${.55 * a})`);
+    ctx.fillStyle = g; ctx.fillRect(0, H - 330, W, 270);
+    const col = c.who === 'her' ? '#F6E6C6' : '#E3EBF5';
+    lines.forEach((ln, i) => txt(ln, W / 2, H - 140 - (lines.length - 1 - i) * 60, font, col, a));
+  }
+  // end title
+  const [ea, eb] = TL.end_title;
+  if (t >= ea && t <= eb) {
+    const a = fade(t, ea, eb, 1.4, 1.2);
+    txt('Side B', W / 2, H / 2 + 10, hand(120), '#EFE3CB', a);
+    txt('somewhere after the second tunnel', W / 2, H / 2 + 90, serif(34), '#CFC6B6', a * clamp((t - ea - 1.6) / 1));
+  }
+  // credits (roll)
+  const [ca, cb] = TL.credits;
+  if (t >= ca && t <= cb) {
+    const p = (t - ca) / (cb - ca), a = fade(t, ca, cb, 1, 1.2);
+    const lines = [
+      ['Side B', hand(84), '#EFE3CB'], ['', serif(20)],
+      ['HER', mono(20), '#B9AE9C'], ['voice: Piper neural TTS · “lessac”', serif(34), '#E9E1D2'], ['', serif(20)],
+      ['HIM', mono(20), '#B9AE9C'], ['voice: Piper neural TTS · “ryan”', serif(34), '#E9E1D2'], ['', serif(20)],
+      ['WRITTEN, SCORED & EDITED', mono(20), '#B9AE9C'], ['Claude, for GUM', serif(34), '#E9E1D2'], ['', serif(20)],
+      ['ARCHIVE FOOTAGE · PUBLIC DOMAIN · PRELINGER ARCHIVES', mono(20), '#B9AE9C'],
+      ['The Passenger Train (1940) · The Passenger Train, second edition (1955)', serif(30), '#E9E1D2'],
+      ['From Dawn to Sunset (1937) · Industry on Parade: Outgoing Cargo', serif(30), '#E9E1D2'],
+      ['Living Stereo (1958) · A Revolutionary New Triumph in Tape (1958)', serif(30), '#E9E1D2'], ['', serif(20)],
+      ['SOUND', mono(20), '#B9AE9C'], ['train horn: GETAS Productions, CC BY-SA 4.0 · original piano score', serif(30), '#E9E1D2'],
+    ];
+    const total = lines.length * 52 + H;
+    let y = H + 40 - p * (total - 200);
+    for (const [s, f, c] of lines) { if (s) txt(s, W / 2, y, f, c || '#fff', a); y += 52; }
+  }
+  // coda caption already in caps; final hard cut handled by black segment
+}
+window.F = { setBG, renderAt, ready: document.fonts.ready.then(() => Promise.all([serif(40), hand(40), mono(20), serif(40, false)].map(f => document.fonts.load(f)))) };
+</script></body></html>

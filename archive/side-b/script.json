@@ -1,0 +1,102 @@
+{
+ "title": "SIDE B",
+ "tapes": [
+  {
+   "n": 1,
+   "who": "her",
+   "lines": [
+    "Hi. This is the girl from the night train. Window seat.",
+    "You fell asleep on my shoulder somewhere after the second tunnel, and I didn't have the heart to move.",
+    "You left this tape on the seat. The first side is all your songs. I've listened to it eleven times.",
+    "So I'm recording on Side B. If this is strange, just rewind, and pretend I never said anything."
+   ]
+  },
+  {
+   "n": 2,
+   "who": "him",
+   "lines": [
+    "It's not strange.",
+    "Okay. It's a little strange. A tape came in the post with no letter, just your voice. I played it standing in the hallway with my coat still on.",
+    "I'm sorry about your shoulder.",
+    "I'm not sorry, actually."
+   ]
+  },
+  {
+   "n": 3,
+   "who": "her",
+   "lines": [
+    "Tell me what your mornings sound like. Mine sound like this.",
+    "[AMBIENCE:morning]",
+    "That's the kettle. It whistles like it's angry at me."
+   ]
+  },
+  {
+   "n": 4,
+   "who": "him",
+   "lines": [
+    "Mine sound like the sea. Can you hear it? I held the recorder out of the window for you.",
+    "[AMBIENCE:sea]",
+    "It's four hundred kilometres between us. Eleven hours, by the slow train. I looked it up. Twice."
+   ]
+  },
+  {
+   "n": 5,
+   "who": "her",
+   "lines": [
+    "I play your tapes before I sleep now. I know the bit where you laugh at your own joke before you finish it.",
+    "It's ridiculous. We've spent forty minutes in the same place.",
+    "And I know the sound of your sea better than my own street."
+   ]
+  },
+  {
+   "n": 6,
+   "who": "him",
+   "lines": [
+    "I have to tell you something.",
+    "They've offered me work on a ship. Six months. Maybe longer. Further than eleven hours.",
+    "I said I'd think about it.",
+    "I've been thinking about you instead."
+   ]
+  },
+  {
+   "n": 7,
+   "who": "her",
+   "lines": [
+    "Go. You should go.",
+    "I'm saying that because it's the right thing to say. Please don't listen to the right thing.",
+    "I don't know what we are. People don't fall for a voice."
+   ]
+  },
+  {
+   "n": 8,
+   "who": "him",
+   "lines": [
+    "Maybe they do.",
+    "The ship leaves on the fourteenth. I'm taking the first train out. The six ten.",
+    "I'm not asking you to come.",
+    "I'm just telling you which window I'll be sitting at."
+   ]
+  },
+  {
+   "n": 9,
+   "who": "her",
+   "lines": [
+    "Side B is almost full, so I'll be quick.",
+    "It's the fourteenth. It's five in the morning. I'm on a platform, holding your umbrella.",
+    "I'm not getting on a train to say goodbye. I'm getting on the one that goes to your sea.",
+    "If you've already gone, I'll wait by the water.",
+    "And if you stayed, if you got on a train to find me,",
+    "[AMBIENCE:horn]",
+    "then I suppose we'll pass each other, somewhere after the second tunnel."
+   ]
+  },
+  {
+   "n": 10,
+   "who": "him",
+   "coda": true,
+   "lines": [
+    "Side A. Track one. This one's for the girl on the platform."
+   ]
+  }
+ ]
+}

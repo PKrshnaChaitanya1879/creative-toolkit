@@ -1,0 +1,10 @@
+*.mp4
+*.mov
+*.webm
+*.wav
+*.mp3
+frames/
+preview/
+*.segs/
+.env
+__pycache__/

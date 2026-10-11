@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Launch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;700;800&family=Geist+Mono:wght@400;500&display=swap">
+<style>
+  /* Design read: a screening page for a 48 s space film. Dark by intent, one accent (engine orange, desaturated),
+     sharp corners everywhere, hairline HUD lines instead of cards. */
+  :root {
+    --bg: #0A0B0F;
+    --surface: #111319;
+    --line: #23262F;
+    --line-strong: #3A3F4B;
+    --text: #EDEEF2;
+    --muted: #9095A3;
+    --accent: #E2764F;
+    --accent-dim: rgba(226, 118, 79, .16);
+    --f-sans: "Geist", ui-sans-serif, system-ui, sans-serif;
+    --f-mono: "Geist Mono", ui-monospace, Menlo, monospace;
+    color-scheme: dark;
+  }
+  :root[data-theme="light"] {
+    --bg: #F1F2F4; --surface: #E7E9ED; --line: #D2D5DC; --line-strong: #B4B9C4;
+    --text: #12141A; --muted: #575D6B; --accent: #B8502B; --accent-dim: rgba(184, 80, 43, .14);
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --bg: #F1F2F4; --surface: #E7E9ED; --line: #D2D5DC; --line-strong: #B4B9C4;
+      --text: #12141A; --muted: #575D6B; --accent: #B8502B; --accent-dim: rgba(184, 80, 43, .14);
+      color-scheme: light;
+    }
+  }
+  /* The film is dark; the page stays dark unless the viewer explicitly forces light. */
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { color-scheme: dark; }
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--text); }
+  body { font-family: var(--f-sans); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 1240px; margin: 0 auto; padding: 0 16px; }
+
+  nav { height: 64px; display: flex; align-items: center; justify-content: space-between; gap: 16px; border-bottom: 1px solid var(--line); }
+  .mark { font: 800 18px/1 var(--f-sans); letter-spacing: .14em; }
+  .meta { font: 400 13px/1 var(--f-mono); color: var(--muted); white-space: nowrap; }
+  .meta .on { color: var(--accent); }
+
+  .hero { padding: 40px 0 0; display: grid; gap: 28px; }
+  h1 { font: 700 clamp(32px, 5.2vw, 60px)/1.04 var(--f-sans); letter-spacing: -.035em; margin: 0; max-width: 22ch; }
+  h1 em { font-style: normal; color: var(--accent); }
+  .lede { margin: 0; max-width: 52ch; font-size: 17px; line-height: 1.55; color: var(--muted); }
+  .head { display: grid; gap: 14px; }
+
+  .screen { position: relative; border: 1px solid var(--line-strong); background: #050608; }
+  .screen video { display: block; width: 100%; aspect-ratio: 16 / 9; background: #050608; }
+  .screen::before, .screen::after { content: ""; position: absolute; width: 14px; height: 14px; border-color: var(--accent); border-style: solid; pointer-events: none; }
+  .screen::before { top: -1px; left: -1px; border-width: 2px 0 0 2px; }
+  .screen::after { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; }
+  .caption { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font: 400 13px/1.5 var(--f-mono); color: var(--muted); padding-top: 10px; }
+
+  /* Distances */
+  .reach { padding: 88px 0 0; display: grid; gap: 28px; }
+  h2 { font: 700 clamp(26px, 3.4vw, 38px)/1.1 var(--f-sans); letter-spacing: -.025em; margin: 0; max-width: 24ch; }
+  .reach p { margin: 0; max-width: 60ch; color: var(--muted); font-size: 16px; line-height: 1.6; }
+  .front { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 16px; padding: 18px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .front .km { font: 600 clamp(28px, 4.2vw, 44px)/1 var(--f-sans); font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+  .front .unit { font: 400 15px/1 var(--f-mono); color: var(--muted); }
+  .front .status { flex-basis: 100%; font: 400 14px/1.5 var(--f-mono); color: var(--accent); }
+
+  .rows { list-style: none; margin: 0; padding: 0; }
+  .row { display: grid; grid-template-columns: minmax(150px, 1fr) minmax(170px, 1fr) 3fr; gap: 8px 24px; align-items: center; padding: 18px 0; border-bottom: 1px solid var(--line); }
+  .row .name { font: 600 17px/1.2 var(--f-sans); display: flex; align-items: center; gap: 10px; }
+  .row .dot { width: 8px; height: 8px; border: 1.5px solid var(--line-strong); transform: rotate(45deg); flex: none; transition: background .3s, border-color .3s; }
+  .row.lit .dot { background: var(--accent); border-color: var(--accent); }
+  .row .num { font: 400 14px/1.45 var(--f-mono); font-variant-numeric: tabular-nums; }
+  .row .num small { display: block; color: var(--muted); font-size: 12.5px; }
+  .track { position: relative; height: 26px; }
+  .track .rail { position: absolute; left: 0; right: 0; top: 12px; height: 1px; background: var(--line-strong); }
+  .track .fill { position: absolute; left: 0; top: 11px; height: 3px; background: var(--accent); width: 0; }
+  .track .tick { position: absolute; top: 7px; width: 1px; height: 11px; background: var(--line-strong); }
+  .track .pin { position: absolute; top: 4px; width: 2px; height: 18px; background: var(--text); transform: translateX(-1px); }
+  .scale { position: relative; height: 18px; font: 400 11.5px/1 var(--f-mono); color: var(--muted); }
+  .scale span { position: absolute; transform: translateX(-50%); white-space: nowrap; }
+  .scale-row { display: grid; grid-template-columns: minmax(150px, 1fr) minmax(170px, 1fr) 3fr; gap: 0 24px; padding-top: 10px; }
+
+  /* Sources */
+  .sources { padding: 88px 0 72px; display: grid; gap: 20px; }
+  dl { margin: 0; display: grid; grid-template-columns: 140px 1fr; border-top: 1px solid var(--line); }
+  dt, dd { margin: 0; padding: 16px 0; border-bottom: 1px solid var(--line); font-size: 15px; line-height: 1.6; }
+  dt { font: 500 13px/1.6 var(--f-mono); color: var(--muted); padding-top: 17px; }
+  dd { max-width: 78ch; }
+  footer { border-top: 1px solid var(--line); padding: 20px 0 32px; font: 400 12.5px/1.5 var(--f-mono); color: var(--muted); }
+
+  @media (max-width: 760px) {
+    .hero { padding-top: 28px; gap: 22px; }
+    .reach, .sources { padding-top: 64px; }
+    .row { grid-template-columns: 1fr auto; }
+    .row .track { grid-column: 1 / -1; }
+    .row .num { text-align: right; }
+    .scale-row { grid-template-columns: 1fr; }
+    .scale-row > :not(.scale) { display: none; }
+    dl { grid-template-columns: 1fr; }
+    dt { border-bottom: 0; padding-bottom: 0; }
+    dd { padding-top: 4px; }
+    .meta .hide-sm { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) { .row .dot { transition: none; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav>
+    <span class="mark">LAUNCH</span>
+    <span class="meta"><span class="hide-sm">48 s · 1080p · </span><span class="on">sound on</span></span>
+  </nav>
+
+  <section class="hero">
+    <div class="head">
+      <h1>From the pad to the edge of the <em>solar system</em> in 48 seconds.</h1>
+      <p class="lede">Real NASA footage, cut to Hans Zimmer’s “Flight”, with live distances from JPL.</p>
+    </div>
+    <div>
+      <div class="screen">
+        <video controls playsinline preload="metadata" poster="poster.jpg" src="launch-web.mp4"></video>
+      </div>
+      <div class="caption"><span>Artemis I → Earth → Moon → Mars → Jupiter → Saturn → Voyager 1</span><span>NASA · JPL-Caltech · STScI</span></div>
+    </div>
+  </section>
+
+  <section class="reach" aria-labelledby="reach-h">
+    <h2 id="reach-h">You opened this page. Light has been travelling ever since.</h2>
+    <p>A pulse of light left Earth the moment the page loaded. Each track below is the same log scale, from 100,000 km to 30 billion km. The orange line is how far that light has got.</p>
+    <div class="front" aria-live="off">
+      <span class="km" id="km">0</span><span class="unit">km from Earth</span>
+      <span class="status" id="status">leaving Earth</span>
+    </div>
+    <ol class="rows" id="rows"></ol>
+    <div class="scale-row" aria-hidden="true"><span></span><span></span><div class="scale" id="scale"></div></div>
+  </section>
+
+  <section class="sources" aria-labelledby="src-h">
+    <h2 id="src-h">Where everything came from</h2>
+    <dl>
+      <dt>Footage</dt>
+      <dd>Artemis I launch (Kennedy Space Center), RS-25 hot fire (Stennis Space Center), 4K Earth views from the ISS, Orion’s lunar flyby camera, Perseverance’s descent camera (NASA/JPL-Caltech).</dd>
+      <dt>Images</dt>
+      <dd>Juno’s Great Red Spot, Cassini’s Saturn (NASA/JPL-Caltech/SwRI/MSSS, NASA/JPL/Space Science Institute), Webb’s First Deep Field and Cosmic Cliffs (NASA, ESA, CSA, STScI), Pale Blue Dot Revisited (NASA/JPL-Caltech).</dd>
+      <dt>Distances</dt>
+      <dd>NASA JPL Horizons, geocentric, 9 October 2026.</dd>
+      <dt>Music</dt>
+      <dd>Hans Zimmer, “Flight” (Man of Steel). The song remains the property of its rights holders.</dd>
+    </dl>
+  </section>
+
+  <footer>Made by Claude for GUM, October 2026.</footer>
+</div>
+
+<script>
+  // Geocentric distances, NASA JPL Horizons, 9 Oct 2026
+  const BODIES = [
+    { name: "Moon",      km: 381667.5,     light: "1.27 light-seconds" },
+    { name: "Mars",      km: 240731353,    light: "13.4 light-minutes" },
+    { name: "Jupiter",   km: 871124697,    light: "48.4 light-minutes" },
+    { name: "Saturn",    km: 1262196026,   light: "70.2 light-minutes" },
+    { name: "Voyager 1", km: 25787466801,  light: "23.9 light-hours" },
+  ];
+  const C = 299792.458;               // km/s
+  const LO = 5, HI = Math.log10(3e10); // scale: 100,000 km .. 30 B km
+  const pos = km => Math.max(0, Math.min(1, (Math.log10(km) - LO) / (HI - LO))) * 100;
+  const fmt = km => km >= 1e9 ? (km / 1e9).toFixed(2) + " B km" : km >= 1e6 ? (km / 1e6).toFixed(1) + " M km" : Math.round(km).toLocaleString("en-US") + " km";
+
+  const TICKS = [[1e5, "100k"], [1e6, "1M"], [1e7, "10M"], [1e8, "100M"], [1e9, "1B"], [1e10, "10B km"]];
+  const rows = document.getElementById("rows");
+  rows.innerHTML = BODIES.map((b, i) => `
+    <li class="row" id="r${i}">
+      <span class="name"><span class="dot" aria-hidden="true"></span>${b.name}</span>
+      <span class="num">${fmt(b.km)}<small>${b.light}</small></span>
+      <span class="track" aria-hidden="true"><span class="rail"></span>
+        ${TICKS.map(([k]) => `<span class="tick" style="left:${pos(k)}%"></span>`).join("")}
+        <span class="fill"></span><span class="pin" style="left:${pos(b.km)}%"></span></span>
+    </li>`).join("");
+  document.getElementById("scale").innerHTML = TICKS.map(([k, l]) => `<span style="left:${pos(k)}%">${l}</span>`).join("");
+
+  const fills = [...rows.querySelectorAll(".fill")], rowEls = [...rows.children];
+  const kmEl = document.getElementById("km"), statusEl = document.getElementById("status");
+  const t0 = performance.now();
+  let lastStatus = "";
+  function dur(s) {
+    if (s < 60) return Math.ceil(s) + " s";
+    if (s < 3600) return Math.ceil(s / 60) + " min";
+    const h = Math.floor(s / 3600), m = Math.ceil((s % 3600) / 60);
+    return h + " h " + m + " min";
+  }
+  function tick() {
+    const s = (performance.now() - t0) / 1000, km = C * s, p = pos(km) + "%";
+    kmEl.textContent = Math.round(km).toLocaleString("en-US");
+    fills.forEach(f => f.style.width = p);
+    let passed = -1;
+    BODIES.forEach((b, i) => { const lit = km >= b.km; rowEls[i].classList.toggle("lit", lit); if (lit) passed = i; });
+    const next = BODIES[passed + 1];
+    const st = next
+      ? (passed >= 0 ? `past ${BODIES[passed].name} · ` : "") + `${next.name} in ${dur((next.km - km) / C)}`
+      : "past Voyager 1, the farthest thing we ever built";
+    if (st !== lastStatus) { statusEl.textContent = st; lastStatus = st; }
+  }
+  tick(); setInterval(tick, 100);
+</script>
+</body>
+</html>

@@ -1,0 +1,314 @@
+[
+ {
+  "tape": 1,
+  "i": 0,
+  "who": "her",
+  "text": "Hi. This is the girl from the night train. Window seat.",
+  "file": "vo/t01_0.wav",
+  "dur": 4.627,
+  "sr": 22050
+ },
+ {
+  "tape": 1,
+  "i": 1,
+  "who": "her",
+  "text": "You fell asleep on my shoulder somewhere after the second tunnel, and I didn't have the heart to move.",
+  "file": "vo/t01_1.wav",
+  "dur": 5.735,
+  "sr": 22050
+ },
+ {
+  "tape": 1,
+  "i": 2,
+  "who": "her",
+  "text": "You left this tape on the seat. The first side is all your songs. I've listened to it eleven times.",
+  "file": "vo/t01_2.wav",
+  "dur": 6.705,
+  "sr": 22050
+ },
+ {
+  "tape": 1,
+  "i": 3,
+  "who": "her",
+  "text": "So I'm recording on Side B. If this is strange, just rewind, and pretend I never said anything.",
+  "file": "vo/t01_3.wav",
+  "dur": 6.719,
+  "sr": 22050
+ },
+ {
+  "tape": 2,
+  "i": 0,
+  "who": "him",
+  "text": "It's not strange.",
+  "file": "vo/t02_0.wav",
+  "dur": 1.068,
+  "sr": 22050
+ },
+ {
+  "tape": 2,
+  "i": 1,
+  "who": "him",
+  "text": "Okay. It's a little strange. A tape came in the post with no letter, just your voice. I played it standing in the hallway with my coat still on.",
+  "file": "vo/t02_1.wav",
+  "dur": 9.291,
+  "sr": 22050
+ },
+ {
+  "tape": 2,
+  "i": 2,
+  "who": "him",
+  "text": "I'm sorry about your shoulder.",
+  "file": "vo/t02_2.wav",
+  "dur": 1.637,
+  "sr": 22050
+ },
+ {
+  "tape": 2,
+  "i": 3,
+  "who": "him",
+  "text": "I'm not sorry, actually.",
+  "file": "vo/t02_3.wav",
+  "dur": 1.753,
+  "sr": 22050
+ },
+ {
+  "tape": 3,
+  "i": 0,
+  "who": "her",
+  "text": "Tell me what your mornings sound like. Mine sound like this.",
+  "file": "vo/t03_0.wav",
+  "dur": 4.119,
+  "sr": 22050
+ },
+ {
+  "tape": 3,
+  "i": 1,
+  "amb": "morning"
+ },
+ {
+  "tape": 3,
+  "i": 2,
+  "who": "her",
+  "text": "That's the kettle. It whistles like it's angry at me.",
+  "file": "vo/t03_2.wav",
+  "dur": 3.643,
+  "sr": 22050
+ },
+ {
+  "tape": 4,
+  "i": 0,
+  "who": "him",
+  "text": "Mine sound like the sea. Can you hear it? I held the recorder out of the window for you.",
+  "file": "vo/t04_0.wav",
+  "dur": 4.778,
+  "sr": 22050
+ },
+ {
+  "tape": 4,
+  "i": 1,
+  "amb": "sea"
+ },
+ {
+  "tape": 4,
+  "i": 2,
+  "who": "him",
+  "text": "It's four hundred kilometres between us. Eleven hours, by the slow train. I looked it up. Twice.",
+  "file": "vo/t04_2.wav",
+  "dur": 7.271,
+  "sr": 22050
+ },
+ {
+  "tape": 5,
+  "i": 0,
+  "who": "her",
+  "text": "I play your tapes before I sleep now. I know the bit where you laugh at your own joke before you finish it.",
+  "file": "vo/t05_0.wav",
+  "dur": 6.626,
+  "sr": 22050
+ },
+ {
+  "tape": 5,
+  "i": 1,
+  "who": "her",
+  "text": "It's ridiculous. We've spent forty minutes in the same place.",
+  "file": "vo/t05_1.wav",
+  "dur": 4.374,
+  "sr": 22050
+ },
+ {
+  "tape": 5,
+  "i": 2,
+  "who": "her",
+  "text": "And I know the sound of your sea better than my own street.",
+  "file": "vo/t05_2.wav",
+  "dur": 3.367,
+  "sr": 22050
+ },
+ {
+  "tape": 6,
+  "i": 0,
+  "who": "him",
+  "text": "I have to tell you something.",
+  "file": "vo/t06_0.wav",
+  "dur": 1.335,
+  "sr": 22050
+ },
+ {
+  "tape": 6,
+  "i": 1,
+  "who": "him",
+  "text": "They've offered me work on a ship. Six months. Maybe longer. Further than eleven hours.",
+  "file": "vo/t06_1.wav",
+  "dur": 6.238,
+  "sr": 22050
+ },
+ {
+  "tape": 6,
+  "i": 2,
+  "who": "him",
+  "text": "I said I'd think about it.",
+  "file": "vo/t06_2.wav",
+  "dur": 1.138,
+  "sr": 22050
+ },
+ {
+  "tape": 6,
+  "i": 3,
+  "who": "him",
+  "text": "I've been thinking about you instead.",
+  "file": "vo/t06_3.wav",
+  "dur": 1.73,
+  "sr": 22050
+ },
+ {
+  "tape": 7,
+  "i": 0,
+  "who": "her",
+  "text": "Go. You should go.",
+  "file": "vo/t07_0.wav",
+  "dur": 2.157,
+  "sr": 22050
+ },
+ {
+  "tape": 7,
+  "i": 1,
+  "who": "her",
+  "text": "I'm saying that because it's the right thing to say. Please don't listen to the right thing.",
+  "file": "vo/t07_1.wav",
+  "dur": 5.233,
+  "sr": 22050
+ },
+ {
+  "tape": 7,
+  "i": 2,
+  "who": "her",
+  "text": "I don't know what we are. People don't fall for a voice.",
+  "file": "vo/t07_2.wav",
+  "dur": 3.527,
+  "sr": 22050
+ },
+ {
+  "tape": 8,
+  "i": 0,
+  "who": "him",
+  "text": "Maybe they do.",
+  "file": "vo/t08_0.wav",
+  "dur": 0.789,
+  "sr": 22050
+ },
+ {
+  "tape": 8,
+  "i": 1,
+  "who": "him",
+  "text": "The ship leaves on the fourteenth. I'm taking the first train out. The six ten.",
+  "file": "vo/t08_1.wav",
+  "dur": 5.149,
+  "sr": 22050
+ },
+ {
+  "tape": 8,
+  "i": 2,
+  "who": "him",
+  "text": "I'm not asking you to come.",
+  "file": "vo/t08_2.wav",
+  "dur": 1.347,
+  "sr": 22050
+ },
+ {
+  "tape": 8,
+  "i": 3,
+  "who": "him",
+  "text": "I'm just telling you which window I'll be sitting at.",
+  "file": "vo/t08_3.wav",
+  "dur": 2.125,
+  "sr": 22050
+ },
+ {
+  "tape": 9,
+  "i": 0,
+  "who": "her",
+  "text": "Side B is almost full, so I'll be quick.",
+  "file": "vo/t09_0.wav",
+  "dur": 3.251,
+  "sr": 22050
+ },
+ {
+  "tape": 9,
+  "i": 1,
+  "who": "her",
+  "text": "It's the fourteenth. It's five in the morning. I'm on a platform, holding your umbrella.",
+  "file": "vo/t09_1.wav",
+  "dur": 6.043,
+  "sr": 22050
+ },
+ {
+  "tape": 9,
+  "i": 2,
+  "who": "her",
+  "text": "I'm not getting on a train to say goodbye. I'm getting on the one that goes to your sea.",
+  "file": "vo/t09_2.wav",
+  "dur": 5.64,
+  "sr": 22050
+ },
+ {
+  "tape": 9,
+  "i": 3,
+  "who": "her",
+  "text": "If you've already gone, I'll wait by the water.",
+  "file": "vo/t09_3.wav",
+  "dur": 3.309,
+  "sr": 22050
+ },
+ {
+  "tape": 9,
+  "i": 4,
+  "who": "her",
+  "text": "And if you stayed, if you got on a train to find me,",
+  "file": "vo/t09_4.wav",
+  "dur": 3.518,
+  "sr": 22050
+ },
+ {
+  "tape": 9,
+  "i": 5,
+  "amb": "horn"
+ },
+ {
+  "tape": 9,
+  "i": 6,
+  "who": "her",
+  "text": "then I suppose we'll pass each other, somewhere after the second tunnel.",
+  "file": "vo/t09_6.wav",
+  "dur": 4.331,
+  "sr": 22050
+ },
+ {
+  "tape": 10,
+  "i": 0,
+  "who": "him",
+  "text": "Side A. Track one. This one's for the girl on the platform.",
+  "file": "vo/t10_0.wav",
+  "dur": 4.22,
+  "sr": 22050
+ }
+]
