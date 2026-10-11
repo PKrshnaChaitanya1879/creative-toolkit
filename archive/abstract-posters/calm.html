@@ -1,0 +1,19 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="file:///home/claude/creative-toolkit/fonts/fonts.css"><style>
+*{margin:0}body{width:1200px;height:1680px;background:#EDEEEA;color:#1C1D21;font-family:Geist;position:relative;overflow:hidden}
+canvas{position:absolute;left:96px;top:96px}
+.t{position:absolute;left:96px;top:1260px;font:500 46px/1.15 Geist;letter-spacing:-.025em}
+.s{position:absolute;left:96px;top:1330px;font:400 20px/1.6 Geist;color:#5F626B;max-width:34ch}
+.f{position:absolute;left:96px;right:96px;bottom:84px;display:flex;justify-content:space-between;font:400 14px/1 "Geist Mono";color:#7A7D86;border-top:1px solid #C9CBC6;padding-top:18px}
+</style></head><body><canvas id="c" width="2016" height="2232" style="width:1008px;height:1116px"></canvas>
+<p class="t">Two quiet sources</p>
+<p class="s">Where their ripples agree, the lines crowd together. Where they cancel, the page goes still.</p>
+<div class="f"><span>λ = 14 px</span><span>d = 10λ</span></div>
+<script>
+const c=document.getElementById('c'),x=c.getContext('2d');x.scale(2,2);const W=1008,H=1116;
+const s1=[W/2-70,H*.46],s2=[W/2+70,H*.46];
+x.save();x.beginPath();x.rect(0,0,W,H);x.clip();
+x.strokeStyle='rgba(28,29,33,.62)';x.lineWidth=1.05;
+for(const s of [s1,s2]) for(let r=14;r<1400;r+=14){x.beginPath();x.arc(s[0],s[1],r,0,Math.PI*2);x.stroke();}
+x.restore();
+x.fillStyle='#2C46D6';for(const s of [s1,s2]){x.beginPath();x.arc(s[0],s[1],6,0,Math.PI*2);x.fill();}
+</script></body></html>
