@@ -21,7 +21,7 @@ The design rules live in the skills (premium-design, video-finish, game-finish, 
 | `blender/export_unity.py` | FBX export for Unity URP with correct scale/axes + triangle counts. |
 | `styles/` | `gum.mplstyle` (lab plots), `tokens.css` (page colours/spacing), project style-sheet template. |
 | `fonts/` | Local Geist, Geist Mono, Inter; `fetch_fonts.py` adds any Google Font. |
-| `archive/` | Source of past projects (World Tour, LAUNCH, SIDE B, rain_2am, Voyager poster) to copy from. |
+| `archive/` | Source of past projects (World Tour, LAUNCH, SIDE B, rain_2am, Voyager poster, window-journey) to copy from. `window-journey` has the procedural painted-scene kit: soft paint helpers, parallax train-window worlds, rain on glass, bloom + grade post. |
 
 ## Quick recipes
 ```bash
