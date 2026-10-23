@@ -1,13 +1,21 @@
 # Commonplay
 
-Search, play and download openly licensed music in one place. Results come from four open catalogues and are mixed together. You can play anything, and you can download a selection as one ZIP that includes a CREDITS.txt and a playlist.
+Search, play and download free music in one place. Results come from eight catalogues and are mixed together. You can play anything, and you can download a selection as one ZIP that includes a CREDITS.txt and a playlist.
 
-| Source | What's there | How it's reached |
+| Source | What's there | Downloads |
 |---|---|---|
-| Jamendo | Indie artists, about 650k CC tracks | Through Openverse (streaming only), or the Jamendo API when you add a free client ID (downloads where the artist allows them) |
-| Internet Archive | Netlabel and open-source audio collections | Directly. Only items that carry a license URL are included |
-| Wikimedia Commons | Mostly public-domain classical recordings | Directly. Clips under 45 seconds, such as pronunciations, are skipped |
-| ccMixter | Remixes, a cappellas and instrumentals | Through the bundled proxy, so only when hosted |
+| Jamendo | About 650k Creative Commons tracks | Stream only, or downloads where the artist allows them once you add a free client ID |
+| Audius | Millions of indie uploads | Mostly stream only ("all rights reserved"); downloads only where the artist turned them on |
+| Free Music Archive | About 16.8k CC albums, through its Internet Archive mirror | Yes |
+| Jamendo Archive | About 294k Jamendo albums mirrored on Internet Archive | Yes (labelled conservatively as CC; check the exact license on Jamendo) |
+| Internet Archive | Netlabel and open-source audio collections (licensed items only) | Yes |
+| Wikimedia Commons | Mostly public-domain classical recordings | Yes |
+| ccMixter | Remixes, a cappellas and instrumentals | Yes, through the bundled proxy (hosted only) |
+| Live Music Archive | About 305k concert recordings from taper-friendly artists | Yes, non-commercial sharing only |
+
+The License filter defaults to **Everything playable**. Switch it to **Open licenses only** to hide Audius and Live Music Archive tracks.
+
+Major-label releases (anything on Spotify or Apple Music from a big label) aren't in any of these catalogues and never will be.
 
 ## Run it
 

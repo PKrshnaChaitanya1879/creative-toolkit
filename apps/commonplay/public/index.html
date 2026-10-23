@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Commonplay</title>
-<meta name="description" content="Search, play and download openly licensed music from Jamendo, Internet Archive, Wikimedia Commons and ccMixter.">
+<meta name="description" content="Search, play and download free music from Jamendo, Audius, the Free Music Archive, Internet Archive, Wikimedia Commons, ccMixter and the Live Music Archive.">
 <meta name="theme-color" content="#F2F2F7" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
 <link rel="manifest" href="manifest.webmanifest">
@@ -330,7 +330,7 @@ h1.ltitle{font-size:2.125rem;line-height:1.2;font-weight:700;letter-spacing:.01e
     <button class="nav-btn" data-nav="settings"><svg class="i"><use href="#i-gear"/></svg>Settings</button>
     <div class="side-h">Sources</div>
     <div id="sideSources"></div>
-    <p class="side-note">Every track is Creative Commons or public domain. Credits travel with each download.</p>
+    <p class="side-note">Every track shows its license. Downloads only appear where the license or the artist allows them, and credits travel with every ZIP.</p>
   </aside>
 
   <main class="main" id="main">
@@ -339,7 +339,7 @@ h1.ltitle{font-size:2.125rem;line-height:1.2;font-weight:700;letter-spacing:.01e
     <!-- Search -->
     <section class="view" data-view="search" aria-labelledby="h-search">
       <h1 class="ltitle" id="h-search">Search</h1>
-      <p class="lsub">Openly licensed music from Jamendo, Internet Archive, Wikimedia Commons and ccMixter. Play anything; download what the artist allows.</p>
+      <p class="lsub">Free music from Jamendo, Audius, the Free Music Archive, Internet Archive, Wikimedia Commons, ccMixter and the Live Music Archive. Play anything; download what the artist allows.</p>
       <form id="searchForm" role="search" autocomplete="off">
         <label class="searchbar">
           <svg class="i" aria-hidden="true"><use href="#i-search"/></svg>
@@ -352,7 +352,8 @@ h1.ltitle{font-size:2.125rem;line-height:1.2;font-weight:700;letter-spacing:.01e
         <div class="seg" id="srcSeg" role="group" aria-label="Source"></div>
         <label class="select-wrap" for="licSel">License
           <select id="licSel">
-            <option value="any">Any open license</option>
+            <option value="all">Everything playable</option>
+            <option value="any">Open licenses only</option>
             <option value="commercial">Commercial use allowed</option>
             <option value="remix">Remixing allowed</option>
             <option value="free">No conditions (CC0 / public domain)</option>
@@ -408,7 +409,7 @@ h1.ltitle{font-size:2.125rem;line-height:1.2;font-weight:700;letter-spacing:.01e
           <label class="toggle"><input type="checkbox" id="optNum" checked aria-label="Number the files"><span></span></label></div>
       </div>
 
-      <p class="foot-note">Licenses are taken from each source as published by the uploader. "NC" means non-commercial use only, "ND" means no remixes, "SA" means share remixes under the same license. Open a track's source page if you need to confirm before using it in a project.</p>
+      <p class="foot-note">Licenses are taken from each source as published by the uploader. Audius tracks marked "All rights reserved" can be streamed here but not downloaded unless the artist turned downloads on; Live Music Archive recordings are for non-commercial sharing. "NC" means non-commercial use only, "ND" means no remixes, "SA" means share remixes under the same license. Open a track's source page if you need to confirm before using it in a project.</p>
     </section>
   </main>
 </div>
@@ -556,13 +557,55 @@ function parseLicense(url, label) {
   if (code === "sampling+" || code === "sampling-plus") code = "sampling+";
   const nc = /nc/.test(code), nd = /nd/.test(code);
   const short = code === "cc0" ? "CC0" : code === "pd" ? "Public domain" : code ? ("CC " + code.toUpperCase() + (ver ? " " + ver : "")) : "Unknown license";
-  return { code, ver, url: url || "", short, nc, nd, free: code === "cc0" || code === "pd" };
+  return { code, ver, url: url || "", short, nc, nd, free: code === "cc0" || code === "pd", open: !!code };
 }
-const licenseOk = (lic, mode) => mode === "any" ? !!lic.code : mode === "commercial" ? !!lic.code && !lic.nc : mode === "remix" ? !!lic.code && !lic.nd : lic.free;
+const ARTIST_LIC = label => ({ code: "artist", ver: "", url: "", short: label && !/^cc|creative/i.test(label) ? label : "Artist's terms", nc: true, nd: true, free: false, open: false });
+// Jamendo's archived albums are all Creative Commons, but the archive copy doesn't record which one,
+// so treat them as the most restrictive variant (non-commercial, no derivatives) until checked on Jamendo.
+const JAMARCHIVE_LIC = { code: "by-nc-nd", ver: "", url: "", short: "CC (check on Jamendo)", nc: true, nd: true, free: false, open: true };
+const LMA_LIC = { code: "lma", ver: "", url: "https://archive.org/about/faqs.php#Live_Music_Archive", short: "Live Music Archive", nc: true, nd: true, free: false, open: false };
+const licenseOk = (lic, mode) => mode === "all" ? true : mode === "any" ? lic.open : mode === "commercial" ? lic.open && !lic.nc : mode === "remix" ? lic.open && !lic.nd : lic.free;
 
 /* ---------- Source adapters ----------
    Each returns { tracks, hasMore } for (query, page). Track shape:
    { key, source, title, artist, album, duration, art, stream, download, ext, size, lic, page, artistPage } */
+/* One Internet Archive search + per-item file lookup, reused for several collections. */
+function iaSource({ name, short, note, query, license, perItem = 10, rows = 5, mediatype = "audio" }) {
+  return { name, short, note: () => note,
+    async search(q, page) {
+      const p = new URLSearchParams({ q: `(${q}) AND mediatype:${mediatype} AND ${query}`, rows: String(rows), page: String(page), output: "json", "sort[]": "downloads desc" });
+      ["identifier", "title", "creator", "licenseurl"].forEach(f => p.append("fl[]", f));
+      const j = await getJSON("https://archive.org/advancedsearch.php?" + p);
+      const docs = j.response?.docs || []; const total = j.response?.numFound || 0;
+      const items = await Promise.all(docs.map(d => fetch("https://archive.org/metadata/" + encodeURIComponent(d.identifier)).then(r => r.json()).catch(() => null)));
+      const tracks = [];
+      items.forEach((it, i) => {
+        if (!it || !it.files || it.is_dark) return; const md = it.metadata || {}; const id = docs[i].identifier;
+        if (md["access-restricted-item"] === "true" || md["access-restricted"] === "true") return;
+        const lic = license ? license(md) : parseLicense(md.licenseurl || docs[i].licenseurl);
+        const order = ["VBR MP3", "MP3", "128Kbps MP3", "256Kbps MP3", "320Kbps MP3", "64Kbps MP3"];
+        const fmt = order.find(f => it.files.some(x => x.format === f)); if (!fmt) return;
+        const files = it.files.filter(x => x.format === fmt && !/(^|\/)_/.test(x.name) && x.private !== "true");
+        files.sort((a, b) => (parseInt(a.track) || 999) - (parseInt(b.track) || 999) || a.name.localeCompare(b.name));
+        const creator = Array.isArray(md.creator) ? md.creator.join(", ") : md.creator;
+        const album = Array.isArray(md.title) ? md.title[0] : md.title;
+        // Put tracks whose own title matches the search first, so "sunflower" finds the song, not just its album.
+        const words = q.toLowerCase().split(" ").filter(Boolean);
+        const score = f => words.filter(w => String(f.title || f.name).toLowerCase().includes(w)).length;
+        files.sort((a, b) => score(b) - score(a));
+        files.slice(0, perItem).forEach(f => {
+          const path = f.name.split("/").map(encodeURIComponent).join("/");
+          const url = `https://archive.org/download/${encodeURIComponent(id)}/${path}`;
+          tracks.push({ key: "archive:" + id + "/" + f.name, source: this_src(name), title: f.title || f.name.replace(/\.[^.]+$/, "").replace(/[_-]+/g, " "),
+            artist: f.artist || f.creator || md.artist || creator || "Unknown artist", album: md.album || album, duration: parseDur(f.length), art: "https://archive.org/services/img/" + encodeURIComponent(id),
+            stream: url, download: url, ext: "mp3", size: +f.size || 0, lic, page: "https://archive.org/details/" + encodeURIComponent(id), artistPage: "" });
+        });
+      });
+      return { hasMore: page * rows < total, tracks };
+    }
+  };
+}
+const this_src = name => Object.keys(SOURCES).find(k => SOURCES[k].name === name);
 const SOURCES = {
   jamendo: {
     name: "Jamendo", short: "Jamendo",
@@ -589,35 +632,33 @@ const SOURCES = {
     }
   },
 
-  archive: {
-    name: "Internet Archive", short: "Archive",
-    note: () => "Netlabel and open-source audio collections",
+  archive: iaSource({ name: "Internet Archive", short: "Archive", note: "Netlabels and open-source audio",
+    query: "(collection:netlabels OR collection:opensource_audio OR collection:audio_music) AND licenseurl:*" }),
+  fma: iaSource({ name: "Free Music Archive", short: "FMA", note: "The Free Music Archive catalogue, via its Internet Archive mirror",
+    query: "collection:freemusicarchive" }),
+  jamarchive: iaSource({ name: "Jamendo Archive", short: "Jamendo Albums", note: "Jamendo's back catalogue, downloadable through Internet Archive",
+    query: "collection:jamendo-albums", license: () => JAMARCHIVE_LIC }),
+  livemusic: iaSource({ name: "Live Music Archive", short: "Live", note: "Concert recordings from taper-friendly artists (non-commercial sharing)",
+    query: "collection:etree", mediatype: "etree", license: () => LMA_LIC, perItem: 6 }),
+
+  audius: {
+    name: "Audius", short: "Audius",
+    note: () => "Indie artists' own uploads. Mostly stream only; downloads where the artist allows them",
     async search(q, page) {
-      const query = `(${q}) AND mediatype:audio AND (collection:netlabels OR collection:opensource_audio OR collection:audio_music) AND licenseurl:*`;
-      const p = new URLSearchParams({ q: query, rows: "6", page: String(page), output: "json", "sort[]": "downloads desc" });
-      ["identifier", "title", "creator", "licenseurl"].forEach(f => p.append("fl[]", f));
-      const j = await getJSON("https://archive.org/advancedsearch.php?" + p);
-      const docs = j.response?.docs || []; const total = j.response?.numFound || 0;
-      const items = await Promise.all(docs.map(d => fetch("https://archive.org/metadata/" + encodeURIComponent(d.identifier)).then(r => r.json()).catch(() => null)));
-      const tracks = [];
-      items.forEach((it, i) => {
-        if (!it || !it.files) return; const md = it.metadata || {}; const id = docs[i].identifier;
-        const lic = parseLicense(md.licenseurl || docs[i].licenseurl);
-        const order = ["VBR MP3", "MP3", "128Kbps MP3", "256Kbps MP3", "320Kbps MP3", "64Kbps MP3"];
-        let fmt = order.find(f => it.files.some(x => x.format === f)); if (!fmt) return;
-        const files = it.files.filter(x => x.format === fmt && !/(^|\/)_/.test(x.name));
-        files.sort((a, b) => (parseInt(a.track) || 999) - (parseInt(b.track) || 999) || a.name.localeCompare(b.name));
-        const creator = Array.isArray(md.creator) ? md.creator.join(", ") : md.creator;
-        const album = Array.isArray(md.title) ? md.title[0] : md.title;
-        files.slice(0, 10).forEach(f => {
-          const path = f.name.split("/").map(encodeURIComponent).join("/");
-          const url = `https://archive.org/download/${encodeURIComponent(id)}/${path}`;
-          tracks.push({ key: "archive:" + id + "/" + f.name, source: "archive", title: f.title || f.name.replace(/\.[^.]+$/, "").replace(/[_-]+/g, " "),
-            artist: f.artist || f.creator || creator || "Unknown artist", album, duration: parseDur(f.length), art: "https://archive.org/services/img/" + encodeURIComponent(id),
-            stream: url, download: url, ext: "mp3", size: +f.size || 0, lic, page: "https://archive.org/details/" + encodeURIComponent(id), artistPage: "" });
-        });
-      });
-      return { hasMore: page * 6 < total, tracks };
+      const p = new URLSearchParams({ query: q, app_name: "Commonplay", limit: "20", offset: String((page - 1) * 20) });
+      const j = await getJSON("https://api.audius.co/v1/tracks/search?" + p);
+      const list = (j.data || []).filter(t => t.is_streamable !== false && t.access?.stream !== false && !t.is_delete);
+      return { hasMore: (j.data || []).length === 20, tracks: list.map(t => {
+        const cc = /creative commons|^cc[\s-]|attribution/i.test(t.license || "");
+        const lic = cc ? parseLicense("", "CC " + String(t.license).replace(/^.*?CC\s*/i, "").replace(/attribution/i, "BY")) : ARTIST_LIC(t.license);
+        const canDl = t.is_downloadable && t.access?.download;
+        const ext = ((t.orig_filename || "").split(".").pop() || "mp3").toLowerCase().slice(0, 5);
+        return { key: "audius:" + t.id, source: "audius", title: t.title, artist: t.user?.name || "Unknown artist", album: t.genre || "",
+          duration: t.duration || 0, art: t.artwork?.["480x480"] || t.artwork?.["150x150"] || "",
+          stream: `https://api.audius.co/v1/tracks/${t.id}/stream?app_name=Commonplay`,
+          download: canDl ? `https://api.audius.co/v1/tracks/${t.id}/download?app_name=Commonplay` : null,
+          ext: /^(mp3|wav|flac|aiff?|m4a|ogg)$/.test(ext) ? ext : "mp3", size: 0, lic, page: "https://audius.co" + (t.permalink || ""), artistPage: t.user?.handle ? "https://audius.co/" + t.user.handle : "" };
+      }) };
     }
   },
 
@@ -667,12 +708,12 @@ const SOURCES = {
     }
   }
 };
-const SRC_ORDER = ["jamendo", "archive", "commons", "ccmixter"];
+const SRC_ORDER = ["jamendo", "audius", "fma", "jamarchive", "archive", "commons", "ccmixter", "livemusic"];
 
 /* ---------- State ---------- */
 const S = {
-  view: "search", query: "", src: "all", lic: store.get("lic", "any"),
-  enabled: store.get("enabled", { jamendo: true, archive: true, commons: true, ccmixter: true }),
+  view: "search", query: "", src: "all", lic: store.get("lic2", "all"),
+  enabled: Object.assign({ jamendo: true, audius: true, fma: true, jamarchive: true, archive: true, commons: true, ccmixter: true, livemusic: true }, store.get("enabled", {})),
   page: {}, more: {}, status: {}, err: {}, buckets: {}, results: [], byKey: new Map(),
   bag: [], queue: [], qi: -1, searchId: 0
 };
@@ -953,7 +994,7 @@ async function makeZip() {
   if (!ok.length) { $("#zipTitle").textContent = "Nothing could be downloaded"; $("#zipSub").textContent = "The sources didn't respond. Try again in a minute."; $("#zipCancel").textContent = "Close"; return; }
   const date = new Date().toISOString().slice(0, 10);
   const credits = [`Commonplay download · ${date}`, `Search: ${cleanQuery(S.query) || "(selection)"}`, "",
-    "Every track below is openly licensed. Keep this file with the music and credit the artists when you share or use it.", "",
+    "Keep this file with the music and credit the artists when you share or use it. Check each license before using a track in your own work.", "",
     ...ok.map((t, n) => [`${n + 1}. ${t.title}`, `   Artist:  ${t.artist}`, t.album ? `   Album:   ${t.album}` : null, `   License: ${t.lic.short}${t.lic.url ? " (" + t.lic.url + ")" : ""}`,
       `   Source:  ${SOURCES[t.source].name} · ${t.page}`, `   File:    ${t._fname}`, `   Attribution: "${t.title}" by ${t.artist}, ${t.lic.short}, via ${SOURCES[t.source].name}`, ""].filter(x => x != null).join("\n"))].join("\n");
   folder.file("CREDITS.txt", credits);
@@ -1008,7 +1049,7 @@ $("#searchForm").addEventListener("submit", e => { e.preventDefault(); clearTime
 $("#clearQ").onclick = () => { $("#q").value = ""; S.query = ""; $("#clearQ").hidden = true; S.results = []; S.status = {}; renderStatus(); renderResults(); $("#q").focus(); };
 $("#moreBtn").onclick = () => runSearch(true);
 $("#licSel").value = S.lic;
-$("#licSel").addEventListener("change", e => { S.lic = e.target.value; store.set("lic", S.lic); renderResults(); });
+$("#licSel").addEventListener("change", e => { S.lic = e.target.value; store.set("lic2", S.lic); renderResults(); });
 $("#jamKey").value = store.get("jamKey", "");
 $("#jamKey").addEventListener("change", e => { store.set("jamKey", e.target.value.trim()); toast(e.target.value.trim() ? "Jamendo downloads turned on" : "Jamendo is back to streaming only"); renderSettings(); if (cleanQuery(S.query)) runSearch(); });
 document.addEventListener("change", e => {
