@@ -24,6 +24,7 @@ The design rules live in the skills (premium-design, video-finish, game-finish, 
 | `blender/export_unity.py` | FBX export for Unity URP with correct scale/axes + triangle counts. |
 | `styles/` | `gum.mplstyle` (lab plots), `tokens.css` (page colours/spacing), project style-sheet template. |
 | `fonts/` | Local Geist, Geist Mono, Inter; `fetch_fonts.py` adds any Google Font. |
+| `apps/commonplay/` | Live web app: search, play and ZIP-download openly licensed music (Jamendo, Internet Archive, Wikimedia Commons, ccMixter). Apple HIG styling, PWA, Cloudflare Pages Functions proxy. Deploy root = `apps/commonplay`, output = `public`. |
 | `archive/` | Source of past projects (World Tour, LAUNCH, SIDE B, rain_2am, Voyager poster, window-journey, hyderabad-film) to copy from. `window-journey` has the procedural painted-scene kit: soft paint helpers, parallax train-window worlds, rain on glass, bloom + grade post. `hyderabad-film` has the photo-film specs (16:9 + 9:16) for photofilm.py. |
 
 ## Quick recipes
